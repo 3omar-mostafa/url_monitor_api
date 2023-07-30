@@ -17,17 +17,6 @@ export class AuthenticationType {
 const AuthenticationTypeSchema = SchemaFactory.createForClass(AuthenticationType);
 
 @Schema({ _id: false })
-export class HttpHeaderType {
-  @Prop()
-  key: string;
-
-  @Prop()
-  value: string;
-}
-
-const HttpHeaderTypeSchema = SchemaFactory.createForClass(HttpHeaderType);
-
-@Schema({ _id: false })
 export class AssertType {
   @Prop()
   statusCode: number;
@@ -73,14 +62,17 @@ export class UrlCheck {
   @Prop({ type: AuthenticationTypeSchema })
   authentication?: AuthenticationType;
 
-  @Prop({ type: [HttpHeaderTypeSchema], _id: false })
-  httpHeaders?: [HttpHeaderType];
+  @Prop({ type: Object, _id: false })
+  httpHeaders?: object;
 
   @Prop({ type: AssertTypeSchema })
   assert?: AssertType;
 
   @Prop()
   ignoreSSL: boolean;
+
+  @Prop({ default: true })
+  isUp: boolean;
 
   @Prop()
   tags?: [string];

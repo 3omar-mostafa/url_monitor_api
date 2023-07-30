@@ -3,10 +3,17 @@ import { HttpService as Http } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import { AxiosResponse } from 'axios';
 import { NotificationService } from '../notification/notification.service';
+import { Model } from 'mongoose';
+import { InjectModel } from '@nestjs/mongoose';
+import { UrlCheck } from '../models/UrlCheck';
 
 @Injectable()
 export class HttpService {
-  constructor(private http: Http, private notificationService: NotificationService) {
+  constructor(
+    private http: Http,
+    private notificationService: NotificationService,
+    @InjectModel(UrlCheck.name) private urlCheckModel: Model<UrlCheck>,
+  ) {
     this.http.axiosRef.interceptors.request.use((config) => {
       config.headers['start-time'] = new Date().getTime();
       return config;
@@ -20,10 +27,10 @@ export class HttpService {
     this.http.axiosRef.defaults.timeout = 5000;
   }
 
-  async get(url: string, userId: string, options?) {
+  async get(urlCheck: UrlCheck, options?) {
     try {
-      const response: AxiosResponse = await firstValueFrom(this.http.get(url, options));
-      const requestDuration: number = response.headers['request-duration'];
+      const response: AxiosResponse = await firstValueFrom(this.http.get(urlCheck.url, options));
+      const requestDuration: number = response.config.headers['request-duration'];
     } catch (e) {
       console.log(e);
     }

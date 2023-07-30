@@ -9,11 +9,12 @@ import { SchedulerModule } from './scheduler/scheduler.module';
 import { HttpModule } from './http/http.module';
 import { NotificationModule } from './notification/notification.module';
 import JwtKeysConfig from './config/JwtKeysConfig';
+import MongooseConfig from './config/MongooseConfig';
 import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ load: [JwtKeysConfig] }),
+    ConfigModule.forRoot({ load: [JwtKeysConfig, MongooseConfig] }),
     MongooseModule.forRoot(process.env.DATABASE_URL),
     AuthModule,
     UsersModule,

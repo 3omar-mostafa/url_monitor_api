@@ -5,6 +5,7 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { GetCurrentUser } from '../auth/get-user.decorator';
 import { User } from '../models/User';
 import { ObjectId } from 'mongoose';
+import { ParseObjectIdPipe } from '../pipes/parse-object-id.pipe';
 
 @Controller('url-check')
 @UseGuards(JwtAuthGuard)
@@ -26,7 +27,7 @@ export class UrlCheckController {
   @Get(':urlCheckId')
   async findOne(
     @GetCurrentUser() user: User,
-    @Param('urlCheckId') urlCheckId: ObjectId,
+    @Param('urlCheckId', ParseObjectIdPipe) urlCheckId: ObjectId,
   ): Promise<UrlCheck> {
     return this.urlCheckService.findOne(user.id, urlCheckId);
   }
@@ -34,7 +35,7 @@ export class UrlCheckController {
   @Put(':urlCheckId')
   async update(
     @GetCurrentUser() user: User,
-    @Param('urlCheckId') urlCheckId: ObjectId,
+    @Param('urlCheckId', ParseObjectIdPipe) urlCheckId: ObjectId,
     @Body() urlCheck: UrlCheck,
   ): Promise<UrlCheck> {
     urlCheck.id = urlCheckId;
@@ -44,7 +45,7 @@ export class UrlCheckController {
   @Delete(':urlCheckId')
   async delete(
     @GetCurrentUser() user: User,
-    @Param('urlCheckId') urlCheckId: ObjectId,
+    @Param('urlCheckId', ParseObjectIdPipe) urlCheckId: ObjectId,
   ): Promise<any> {
     return this.urlCheckService.delete(user.id, urlCheckId);
   }

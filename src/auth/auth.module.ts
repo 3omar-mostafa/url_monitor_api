@@ -20,7 +20,10 @@ import { PassportModule } from '@nestjs/passport';
         return {
           privateKey: configService.get('JWT_PRIVATE_KEY'),
           publicKey: configService.get('JWT_PUBLIC_KEY'),
-          signOptions: { expiresIn: '1h', algorithm: 'RS256' },
+          signOptions: {
+            expiresIn: configService.get('JWT_EXPIRATION_TIME'),
+            algorithm: configService.get('JWT_ALGORITHM'),
+          },
         };
       },
       inject: [ConfigService],

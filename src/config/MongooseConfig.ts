@@ -1,6 +1,15 @@
 import mongoose from 'mongoose';
 
 export default () => {
+  mongoose.set('toJSON', {
+    virtuals: true,
+    transform: function (doc, ret, options) {
+      delete ret._id;
+      delete ret.__v;
+      delete ret.password;
+    },
+  });
+
   // Allows mongoose to convert 'id' property to object id as it does with _id
   const objectIdOriginalCast = mongoose.Schema.Types.ObjectId.cast();
   mongoose.Schema.Types.ObjectId.cast((value) => {

@@ -11,6 +11,7 @@ import { NotificationModule } from './notification/notification.module';
 import JwtKeysConfig from './config/JwtKeysConfig';
 import MongooseConfig from './config/MongooseConfig';
 import { ScheduleModule } from '@nestjs/schedule';
+import { UrlCheckModule } from './url-check/url-check.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     ScheduleModule.forRoot(),
     HttpModule,
     NotificationModule,
+    UrlCheckModule,
   ],
   controllers: [AppController],
   providers: [AppService],

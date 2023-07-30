@@ -1,16 +1,14 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument, ObjectId } from 'mongoose';
-import { IsEmail, isEmail, IsMongoId, isNotEmpty } from 'class-validator';
+import { IsEmail, isEmail, isNotEmpty } from 'class-validator';
 import { UrlCheck } from './UrlCheck';
 
 export type UserDocument = HydratedDocument<User>;
 
 @Schema()
 export class User {
-  @IsMongoId()
   _id: ObjectId;
 
-  @IsMongoId()
   id: ObjectId;
 
   @Prop()

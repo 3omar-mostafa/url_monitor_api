@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { UrlCheck } from '../models/UrlCheck';
-import mongoose, { Model, ObjectId } from 'mongoose';
+import { Model, ObjectId } from 'mongoose';
 import { User } from '../models/User';
 
 @Injectable()
@@ -26,13 +26,15 @@ export class UrlCheckService {
 
   async update(user: User, urlCheck: UrlCheck): Promise<UrlCheck | null> {
     const urlCheckId = urlCheck.id;
-    const originalUrlCheck = await this.urlCheckModel.findOne(user.id, urlCheckId);
-    if (!originalUrlCheck) {
+    urlCheck._id = urlCheckId;
+    urlCheck.user = user;
+
+    urlCheck = await this.urlCheckModel.findByIdAndUpdate(urlCheckId, urlCheck, { new: true });
+    if (!urlCheck) {
       throw new NotFoundException(`UrlCheck '${urlCheckId}' is not found`);
     }
 
-    urlCheck = { ...urlCheck, id: urlCheckId, user: user };
-    return originalUrlCheck.updateOne(urlCheck, { new: true }).exec();
+    return urlCheck;
   }
 
   async delete(userId: ObjectId, urlCheckId: ObjectId): Promise<any> {

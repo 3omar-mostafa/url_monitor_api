@@ -1,7 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument, ObjectId } from 'mongoose';
 import { User } from './User';
-import { IsMongoId } from 'class-validator';
 
 export type UrlCheckDocument = HydratedDocument<UrlCheck>;
 
@@ -39,10 +38,8 @@ const AssertTypeSchema = SchemaFactory.createForClass(AssertType);
 
 @Schema()
 export class UrlCheck {
-  @IsMongoId()
   _id: ObjectId;
 
-  @IsMongoId()
   id: ObjectId;
 
   @Prop({ required: true })

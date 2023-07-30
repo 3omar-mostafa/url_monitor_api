@@ -31,6 +31,7 @@ export class HttpService {
     try {
       const response: AxiosResponse = await firstValueFrom(this.http.get(urlCheck.url, options));
       const requestDuration: number = response.config.headers['request-duration'];
+      console.log(`Tested ${urlCheck.url}, responded in ${requestDuration}ms`);
     } catch (e) {
       console.log(e);
     }

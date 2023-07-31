@@ -23,10 +23,19 @@ export class HttpService {
       return config;
     });
 
-    this.http.axiosRef.interceptors.response.use((response) => {
-      response.config.headers['request-duration'] = new Date().getTime() - response.config.headers['start-time'];
-      return response;
-    });
+    this.http.axiosRef.interceptors.response.use(
+      (response) => {
+        response.config.headers['request-duration'] = this.calculateDuration(response);
+        return response;
+      },
+      (error) => {
+        if (error.response) {
+          error.response.config.headers['request-duration'] = this.calculateDuration(error.response);
+          return Promise.resolve(error.response);
+        }
+        return Promise.reject(error);
+      },
+    );
 
     this.http.axiosRef.defaults.timeout = 5000;
 
@@ -37,12 +46,20 @@ export class HttpService {
     this.httpsAgent = new https.Agent();
   }
 
+  private calculateDuration(response: AxiosResponse) {
+    return new Date().getTime() - response.config.headers['start-time'];
+  }
+
   async check(urlCheck: UrlCheckDocument) {
     let response: AxiosResponse;
     let isUp = true;
     let url: URL;
     try {
-      url = new URL(urlCheck.url);
+      if (!urlCheck.url.startsWith('http')) {
+        url = new URL(`http://${urlCheck.url}`);
+      } else {
+        url = new URL(urlCheck.url);
+      }
       url.port = String(urlCheck.port);
       url.protocol = urlCheck.protocol;
       if (urlCheck.path) {
@@ -60,7 +77,6 @@ export class HttpService {
       const requestDuration: number = response.config.headers['request-duration'];
       console.log(`Tested ${urlCheck.url}, responded in ${requestDuration}ms`);
     } catch (e) {
-      console.log(e);
       isUp = false;
     }
 
@@ -69,7 +85,9 @@ export class HttpService {
     }
 
     if (isUp !== urlCheck.isUp) {
-      // this.notifications.sendNotifications(userId, url, status);
+      urlCheck.isUp = isUp;
+      urlCheck.save();
+      this.notificationService.sendNotifications(urlCheck, url.toString());
     }
   }
 }

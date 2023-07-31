@@ -31,10 +31,21 @@ export class SchedulerService implements OnModuleInit {
   }
 
   static add(urlCheck: UrlCheckDocument) {
-    const intervalCallBack = setInterval(async () => {
+    const intervalID = urlCheck.id.toString();
+
+    if (this.schedulerRegistry.doesExist('interval', intervalID)) {
+      return;
+    }
+
+    const callback = async () => {
       await SchedulerService.httpService.check(urlCheck);
-    }, urlCheck.interval);
-    this.schedulerRegistry.addInterval(urlCheck.id.toString(), intervalCallBack);
+    };
+
+    // setInterval will call the callback after the interval has passed, not immediately, so we call it immediately once
+    callback();
+
+    const intervalCallBack = setInterval(callback, urlCheck.interval);
+    this.schedulerRegistry.addInterval(intervalID, intervalCallBack);
   }
 
   static update(urlCheck: UrlCheckDocument) {
@@ -43,6 +54,12 @@ export class SchedulerService implements OnModuleInit {
   }
 
   static remove(urlCheck: UrlCheckDocument) {
-    this.schedulerRegistry.deleteInterval(urlCheck.id.toString());
+    const intervalID = urlCheck.id.toString();
+
+    if (!this.schedulerRegistry.doesExist('interval', intervalID)) {
+      return;
+    }
+
+    this.schedulerRegistry.deleteInterval(intervalID);
   }
 }

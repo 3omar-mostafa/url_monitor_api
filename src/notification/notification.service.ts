@@ -3,6 +3,7 @@ import { User } from '../models/User';
 import { JwtService } from '@nestjs/jwt';
 import { EmailNotificationService } from './providers/email/email-notification.service';
 import * as process from 'process';
+import { UrlCheckDocument } from '../models/UrlCheck';
 
 @Injectable()
 export class NotificationService {
@@ -30,4 +31,6 @@ export class NotificationService {
       },
     );
   }
+
+  async sendNotifications(urlCheck: UrlCheckDocument, url: string) {}
 }

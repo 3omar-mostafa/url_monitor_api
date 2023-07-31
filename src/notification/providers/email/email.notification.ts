@@ -2,7 +2,8 @@ import { ConfigService } from '@nestjs/config';
 import { Notification, NotificationMessage } from '../notification';
 import { createTransport, Transporter } from 'nodemailer';
 import Mail from 'nodemailer/lib/mailer';
-import { readFileSync } from 'fs';
+import * as fs from 'fs';
+import * as path from 'path';
 import handlebars from 'handlebars';
 
 export class EmailNotification implements Notification {
@@ -38,7 +39,8 @@ export class EmailNotification implements Notification {
   }
 
   private async renderTemplate(templatePath: string, templateArgs: object) {
-    const sourceTemplate = await readFileSync(templatePath, 'utf8');
+    templatePath = path.join(__dirname, 'templates', templatePath);
+    const sourceTemplate = await fs.readFileSync(templatePath, 'utf8');
     const template = handlebars.compile(sourceTemplate);
     return template(templateArgs);
   }

@@ -85,7 +85,6 @@ export const UrlCheckSchema = SchemaFactory.createForClass(UrlCheck);
 
 UrlCheckSchema.post(/create|insert|save/, { query: true, document: true }, async (doc: UrlCheckDocument) => {
   SchedulerService.add(doc);
-  console.log(`Url Check: ${doc.id} (${doc.url}) is added, will be added to schedule`);
 });
 
 UrlCheckSchema.post(
@@ -96,7 +95,6 @@ UrlCheckSchema.post(
   },
   async (doc: UrlCheckDocument) => {
     SchedulerService.update(doc);
-    console.log(`Url Check: ${doc.id} (${doc.url}) is updated, will be updated`);
   },
 );
 
@@ -108,7 +106,5 @@ UrlCheckSchema.post(
   },
   async (doc: UrlCheckDocument) => {
     SchedulerService.remove(doc);
-
-    console.log(`Url Check: ${doc.id} (${doc?.url}) is deleted, will be deleted from the scheduler`);
   },
 );

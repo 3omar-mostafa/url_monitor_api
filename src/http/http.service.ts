@@ -3,9 +3,7 @@ import { HttpService as Http } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { NotificationService } from '../notification/notification.service';
-import { Model } from 'mongoose';
-import { InjectModel } from '@nestjs/mongoose';
-import { UrlCheck, UrlCheckDocument } from '../models/UrlCheck';
+import { UrlCheckDocument } from '../models/UrlCheck';
 import * as https from 'https';
 
 @Injectable()
@@ -13,11 +11,7 @@ export class HttpService {
   private httpsAgentIgnoringSSLErrors: https.Agent;
   private httpsAgent: https.Agent;
 
-  constructor(
-    private http: Http,
-    private notificationService: NotificationService,
-    @InjectModel(UrlCheck.name) private urlCheckModel: Model<UrlCheck>,
-  ) {
+  constructor(private http: Http, private notificationService: NotificationService) {
     this.http.axiosRef.interceptors.request.use((config) => {
       config.headers['start-time'] = new Date().getTime();
       return config;
@@ -87,7 +81,7 @@ export class HttpService {
     if (isUp !== urlCheck.isUp) {
       urlCheck.isUp = isUp;
       urlCheck.save();
-      this.notificationService.sendNotifications(urlCheck, url.toString());
+      this.notificationService.sendAllNotifications(urlCheck, url.toString());
     }
   }
 }

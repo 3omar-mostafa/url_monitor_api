@@ -25,7 +25,7 @@ export class AuthService {
     let newUser = new User(user.firstName, user.lastName, user.email, hashedPassword);
     newUser = await this.usersService.create(newUser);
 
-    this.notificationService.sendVerificationEmail(newUser, this.generateVerificationUrl(newUser));
+    this.notificationService.sendEmailVerification(newUser, this.generateVerificationUrl(newUser));
 
     return newUser;
   }

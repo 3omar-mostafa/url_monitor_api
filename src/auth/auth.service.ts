@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
-import { JwtService } from '@nestjs/jwt';
+import { JwtService } from '../jwt/jwt.service';
 import * as bcrypt from 'bcrypt';
 import { User } from 'src/models/User';
 import { NotificationService } from '../notification/notification.service';
@@ -46,19 +46,12 @@ export class AuthService {
     }
 
     return {
-      token: await this.generateJwtToken(user),
+      token: await this.jwtService.generateJwtToken(user),
     };
   }
 
-  private async generateJwtToken(user: User, payload?) {
-    if (!payload) {
-      payload = { sub: user.id, firstName: user.firstName, email: user.email, isVerified: user.isVerified };
-    }
-    return this.jwtService.signAsync(payload);
-  }
-
   private async generateVerificationUrl(user: User): Promise<string> {
-    const token = await this.generateJwtToken(user);
+    const token = await this.jwtService.generateJwtToken(user);
     const url = new URL(process.env.HOST_DOMAIN);
     url.pathname = '/auth/verify';
     url.port = process.env.PORT;

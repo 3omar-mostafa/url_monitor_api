@@ -12,6 +12,7 @@ import JwtKeysConfig from './config/JwtKeysConfig';
 import MongooseConfig from './config/MongooseConfig';
 import { ScheduleModule } from '@nestjs/schedule';
 import { UrlCheckModule } from './url-check/url-check.module';
+import { JwtModule } from './jwt/jwt.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { UrlCheckModule } from './url-check/url-check.module';
     HttpModule,
     NotificationModule,
     UrlCheckModule,
+    JwtModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -24,6 +24,9 @@ export class User {
   @Prop({ required: true, trim: true, validate: isNotEmpty })
   password: string;
 
+  @Prop({ default: false })
+  isVerified: boolean;
+
   @Prop({ type: [mongoose.Schema.Types.ObjectId], ref: 'UrlCheck' })
   urlChecks: [UrlCheck];
 
@@ -32,7 +35,17 @@ export class User {
     this.lastName = lastName;
     this.email = email;
     this.password = password;
+    this.isVerified = false;
   }
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
+
+UserSchema.set('toJSON', {
+  transform: (document, returnedObject) => {
+    delete returnedObject._id;
+    delete returnedObject.__v;
+    delete returnedObject.password;
+    delete returnedObject.isVerified;
+  },
+});

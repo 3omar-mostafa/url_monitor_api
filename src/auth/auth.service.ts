@@ -1,19 +1,16 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { User } from 'src/models/User';
+import { NotificationService } from '../notification/notification.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
+    private notificationService: NotificationService,
   ) {}
 
   async signup(user: User) {
@@ -25,14 +22,12 @@ export class AuthService {
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(user.password, saltRounds);
 
-    const newUser = new User(
-      user.firstName,
-      user.lastName,
-      user.email,
-      hashedPassword,
-    );
+    let newUser = new User(user.firstName, user.lastName, user.email, hashedPassword);
+    newUser = await this.usersService.create(newUser);
 
-    return this.usersService.create(newUser);
+    this.notificationService.sendVerificationEmail(newUser, this.generateVerificationUrl(newUser));
+
+    return newUser;
   }
 
   async logIn(email: string, password: string) {
@@ -45,9 +40,50 @@ export class AuthService {
     if (!correctPassword) {
       throw new UnauthorizedException();
     }
-    const payload = { sub: user.id, email: user.email };
+
+    if (!user.isVerified) {
+      throw new UnauthorizedException(`Please verify your email address`);
+    }
+
     return {
-      access_token: await this.jwtService.signAsync(payload),
+      token: await this.generateJwtToken(user),
+    };
+  }
+
+  private async generateJwtToken(user: User, payload?) {
+    if (!payload) {
+      payload = { sub: user.id, firstName: user.firstName, email: user.email, isVerified: user.isVerified };
+    }
+    return this.jwtService.signAsync(payload);
+  }
+
+  private async generateVerificationUrl(user: User): Promise<string> {
+    const token = await this.generateJwtToken(user);
+    const url = new URL(process.env.HOST_DOMAIN);
+    url.pathname = '/auth/verify';
+    url.port = process.env.PORT;
+    url.searchParams.append('token', token);
+    return url.toString();
+  }
+
+  async verify(token: string) {
+    const jwtPayload = this.jwtService.verify(token);
+    if (!jwtPayload) {
+      throw new UnauthorizedException();
+    }
+
+    const user = await this.usersService.findById(jwtPayload.sub);
+
+    if (user.isVerified) {
+      throw new BadRequestException(`Email ${jwtPayload.email} is already verified, you can login now`);
+    }
+
+    user.isVerified = true;
+    await user.save();
+
+    return {
+      status: 'success',
+      message: `Email ${jwtPayload.email} is verified, you can login now`,
     };
   }
 }

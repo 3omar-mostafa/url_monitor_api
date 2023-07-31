@@ -8,6 +8,7 @@ import { UsersService } from '../users/users.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtStrategy } from './jwt.strategy';
 import { PassportModule } from '@nestjs/passport';
+import { NotificationModule } from '../notification/notification.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { PassportModule } from '@nestjs/passport';
       },
       inject: [ConfigService],
     }),
+    NotificationModule,
   ],
   controllers: [AuthController],
   providers: [AuthService, UsersService, JwtStrategy],

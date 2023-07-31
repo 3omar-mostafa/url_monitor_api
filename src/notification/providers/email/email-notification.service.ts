@@ -5,11 +5,13 @@ import Mail from 'nodemailer/lib/mailer';
 import * as fs from 'fs';
 import * as path from 'path';
 import handlebars from 'handlebars';
+import { Injectable } from '@nestjs/common';
 
-export class EmailNotification implements Notification {
+@Injectable()
+export class EmailNotificationService implements Notification {
   private transporter: Transporter;
 
-  constructor(private configService: ConfigService) {
+  constructor() {
     this.transporter = createTransport({
       host: process.env.SMTP_SERVER,
       port: parseInt(process.env.SMTP_SERVER_PORT),
@@ -35,7 +37,7 @@ export class EmailNotification implements Notification {
       ...mailOptions,
     };
 
-    return this.transporter.sendMail(mailOptions);
+    return this.transporter.sendMail(mailMessage);
   }
 
   private async renderTemplate(templatePath: string, templateArgs: object) {

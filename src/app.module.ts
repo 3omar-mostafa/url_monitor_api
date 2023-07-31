@@ -15,7 +15,7 @@ import { UrlCheckModule } from './url-check/url-check.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ load: [JwtKeysConfig, MongooseConfig] }),
+    ConfigModule.forRoot({ load: [JwtKeysConfig, MongooseConfig], isGlobal: true }),
     MongooseModule.forRoot(process.env.DATABASE_URL),
     AuthModule,
     UsersModule,

@@ -64,7 +64,7 @@ export class HttpService {
       isUp = false;
     }
 
-    if (urlCheck.assert.statusCode && response.status !== urlCheck.assert.statusCode) {
+    if (urlCheck.assert?.statusCode && response?.status !== urlCheck.assert.statusCode) {
       isUp = false;
     }
 

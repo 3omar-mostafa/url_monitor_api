@@ -3,10 +3,20 @@ import { SchedulerService } from './scheduler.service';
 import { HttpModule } from '../http/http.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { MongooseModule } from '@nestjs/mongoose';
-import { UrlCheck, UrlCheckSchema } from '../models/UrlCheck';
+import { UrlCheckSchema } from '../models/UrlCheck';
+import { Models } from '../models/constants';
 
 @Module({
-  imports: [HttpModule, ScheduleModule, MongooseModule.forFeature([{ name: UrlCheck.name, schema: UrlCheckSchema }])],
+  imports: [
+    HttpModule,
+    ScheduleModule,
+    MongooseModule.forFeature([
+      {
+        name: Models.URL_CHECK,
+        schema: UrlCheckSchema,
+      },
+    ]),
+  ],
 
   providers: [SchedulerService],
   exports: [SchedulerService],

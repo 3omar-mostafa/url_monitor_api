@@ -4,6 +4,7 @@ import { HttpService } from '../http/http.service';
 import { UrlCheck, UrlCheckDocument } from '../models/UrlCheck';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { Models } from '../models/constants';
 
 @Injectable()
 export class SchedulerService implements OnModuleInit {
@@ -13,7 +14,7 @@ export class SchedulerService implements OnModuleInit {
   constructor(
     schedulerRegistry: SchedulerRegistry,
     httpService: HttpService,
-    @InjectModel(UrlCheck.name) private urlCheckModel: Model<UrlCheck>,
+    @InjectModel(Models.URL_CHECK) private urlCheckModel: Model<UrlCheck>,
   ) {
     SchedulerService.schedulerRegistry = schedulerRegistry;
     SchedulerService.httpService = httpService;

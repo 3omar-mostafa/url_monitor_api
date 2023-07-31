@@ -1,13 +1,15 @@
 import { Module } from '@nestjs/common';
 import { UrlCheckService } from './url-check.service';
 import { MongooseModule } from '@nestjs/mongoose';
-import { UrlCheck, UrlCheckSchema } from '../models/UrlCheck';
+import { UrlCheckSchema } from '../models/UrlCheck';
 import { UrlCheckController } from './url-check.controller';
+import { JwtModule } from '../jwt/jwt.module';
+import { Models } from '../models/constants';
 
 @Module({
-  imports: [MongooseModule.forFeature([{ name: UrlCheck.name, schema: UrlCheckSchema }])],
+  imports: [JwtModule, MongooseModule.forFeature([{ name: Models.URL_CHECK, schema: UrlCheckSchema }])],
   providers: [UrlCheckService],
-  exports: [UrlCheckService],
+  exports: [UrlCheckService, MongooseModule],
   controllers: [UrlCheckController],
 })
 export class UrlCheckModule {}

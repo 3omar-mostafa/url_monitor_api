@@ -3,10 +3,12 @@ import { InjectModel } from '@nestjs/mongoose';
 import { UrlCheck, UrlCheckDocument } from '../models/UrlCheck';
 import { Model, ObjectId } from 'mongoose';
 import { User } from '../models/User';
+import { JwtService } from '../jwt/jwt.service';
+import { Models } from '../models/constants';
 
 @Injectable()
 export class UrlCheckService {
-  constructor(@InjectModel(UrlCheck.name) private urlCheckModel: Model<UrlCheck>) {}
+  constructor(private jwtService: JwtService, @InjectModel(Models.URL_CHECK) private urlCheckModel: Model<UrlCheck>) {}
 
   async findOne(userId: ObjectId, urlCheckId: ObjectId): Promise<UrlCheck | null> {
     const urlCheck = await this.urlCheckModel.findById(urlCheckId).exec();

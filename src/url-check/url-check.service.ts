@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { UrlCheck, UrlCheckDocument } from '../models/UrlCheck';
 import { Model, ObjectId } from 'mongoose';
@@ -39,7 +39,7 @@ export class UrlCheckService {
     return updatedUrlCheck;
   }
 
-  async delete(userId: ObjectId, urlCheckId: ObjectId): Promise<any> {
+  async delete(userId: ObjectId | string, urlCheckId: ObjectId | string): Promise<any> {
     const urlCheck = await this.urlCheckModel.findById(urlCheckId).exec();
     if (urlCheck && urlCheck.user._id == userId) {
       return urlCheck.deleteOne();
@@ -49,5 +49,35 @@ export class UrlCheckService {
 
   async deleteAll(userId: ObjectId): Promise<any> {
     return this.urlCheckModel.deleteMany({ user: userId }).exec();
+  }
+
+  async generateUrlCheckUnsubscribeUrl(userId: ObjectId | string, urlCheckId: ObjectId | string): Promise<string> {
+    const jwtPayload = {
+      urlCheckId: urlCheckId,
+      userId: userId,
+    };
+
+    const token = await this.jwtService.generateJwtToken(null, jwtPayload);
+
+    const url = new URL(process.env.HOST_DOMAIN);
+    url.pathname = '/url-check/unsubscribe';
+    url.port = process.env.PORT;
+    url.searchParams.append('token', token);
+    return url.toString();
+  }
+
+  async unsubscribe(token: string) {
+    const jwtPayload = this.jwtService.verify(token);
+
+    if (!jwtPayload) {
+      throw new BadRequestException('Invalid token');
+    }
+
+    await this.delete(jwtPayload.userId, jwtPayload.urlCheckId);
+
+    return {
+      status: 'success',
+      message: 'You have successfully unsubscribed',
+    };
   }
 }

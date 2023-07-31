@@ -1,4 +1,16 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Post,
+  Put,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { UrlCheckService } from './url-check.service';
 import { UrlCheck } from 'src/models/UrlCheck';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -8,11 +20,11 @@ import { ObjectId } from 'mongoose';
 import { ParseObjectIdPipe } from '../pipes/parse-object-id.pipe';
 
 @Controller('url-check')
-@UseGuards(JwtAuthGuard)
 export class UrlCheckController {
   constructor(private readonly urlCheckService: UrlCheckService) {}
 
   @Post()
+  @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.CREATED)
   async create(@GetCurrentUser() user: User, @Body() urlCheck: UrlCheck): Promise<UrlCheck> {
     urlCheck.user = user;
@@ -20,11 +32,18 @@ export class UrlCheckController {
   }
 
   @Get()
+  @UseGuards(JwtAuthGuard)
   async findAll(@GetCurrentUser() user: User): Promise<UrlCheck[]> {
     return this.urlCheckService.findAll(user.id);
   }
 
+  @Get('unsubscribe')
+  async unsubscribe(@Query('token') token: string) {
+    return this.urlCheckService.unsubscribe(token);
+  }
+
   @Get(':urlCheckId')
+  @UseGuards(JwtAuthGuard)
   async findOne(
     @GetCurrentUser() user: User,
     @Param('urlCheckId', ParseObjectIdPipe) urlCheckId: ObjectId,
@@ -33,6 +52,7 @@ export class UrlCheckController {
   }
 
   @Put(':urlCheckId')
+  @UseGuards(JwtAuthGuard)
   async update(
     @GetCurrentUser() user: User,
     @Param('urlCheckId', ParseObjectIdPipe) urlCheckId: ObjectId,
@@ -43,6 +63,7 @@ export class UrlCheckController {
   }
 
   @Delete(':urlCheckId')
+  @UseGuards(JwtAuthGuard)
   async delete(
     @GetCurrentUser() user: User,
     @Param('urlCheckId', ParseObjectIdPipe) urlCheckId: ObjectId,
@@ -51,6 +72,7 @@ export class UrlCheckController {
   }
 
   @Delete()
+  @UseGuards(JwtAuthGuard)
   async deleteAll(@GetCurrentUser() user: User): Promise<any> {
     return this.urlCheckService.deleteAll(user.id);
   }

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { JwtService as Jwt } from '@nestjs/jwt';
 import { User } from '../models/User';
 import { JwtSignOptions, JwtVerifyOptions } from '@nestjs/jwt/dist/interfaces';
@@ -16,7 +16,12 @@ export class JwtService {
   }
 
   verify(token: string, options?: JwtVerifyOptions): any {
-    return this.jwtService.verify(token, options);
+    try {
+      return this.jwtService.verify(token, options);
+    } catch (err) {
+      console.log('JWT Verify Error: ' + err.message);
+      return null;
+    }
   }
 
   async signAsync(payload: string, options?: Omit<JwtSignOptions, keyof jwt.SignOptions>): Promise<string> {

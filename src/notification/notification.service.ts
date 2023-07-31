@@ -47,6 +47,7 @@ export class NotificationService {
 
     const status = urlCheck.isUp ? 'up' : 'down';
 
+    const unsubscribeLink = await this.urlCheckService.generateUrlCheckUnsubscribeUrl(user._id, urlCheck.id);
     this.emailNotificationService.send(
       {
         subject: '[Website Monitor] Status changed',
@@ -54,6 +55,7 @@ export class NotificationService {
         templateArgs: {
           firstName: user.firstName,
           url: url,
+          unsubscribeLink: unsubscribeLink,
         },
       },
       {

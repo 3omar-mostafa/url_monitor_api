@@ -3,6 +3,7 @@ import { User } from '../models/User';
 import { EmailNotificationService } from './providers/email/email-notification.service';
 import * as process from 'process';
 import { UrlCheckDocument } from '../models/UrlCheck';
+import { WebhookNotificationService } from './providers/webhook/webhook-notification.service';
 import { UsersService } from '../users/users.service';
 import { UrlCheckService } from '../url-check/url-check.service';
 
@@ -62,7 +63,28 @@ export class NotificationService {
     );
   }
 
+  async sendWebhookNotification(url: string, urlCheck: UrlCheckDocument) {
+    const status = urlCheck.isUp ? 'up' : 'down';
+
+    this.webhookNotificationService.send(
+      {
+        subject: '[Website Monitor] Status changed',
+        message: `The url you are monitoring (${url}) is now ${status}`,
+      },
+      {
+        webhookUrl: urlCheck.webhook,
+      },
+      {
+        url: url,
+        status: status,
+      },
+    );
+  }
+
   async sendAllNotifications(urlCheck: UrlCheckDocument, url: string) {
+    if (urlCheck.webhook) {
+      this.sendWebhookNotification(url, urlCheck);
+    }
     this.sendEmailNotification(url, urlCheck);
   }
 }

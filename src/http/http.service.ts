@@ -5,7 +5,7 @@ import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { NotificationService } from '../notification/notification.service';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
-import { UrlCheck } from '../models/UrlCheck';
+import { UrlCheck, UrlCheckDocument } from '../models/UrlCheck';
 import * as https from 'https';
 
 @Injectable()
@@ -37,7 +37,7 @@ export class HttpService {
     this.httpsAgent = new https.Agent();
   }
 
-  async get(urlCheck: UrlCheck) {
+  async check(urlCheck: UrlCheckDocument) {
     let response: AxiosResponse;
     let isUp = true;
     let url: URL;

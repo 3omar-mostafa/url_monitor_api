@@ -1,7 +1,7 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { HttpService } from '../http/http.service';
-import { UrlCheck } from '../models/UrlCheck';
+import { UrlCheck, UrlCheckDocument } from '../models/UrlCheck';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
@@ -30,19 +30,19 @@ export class SchedulerService implements OnModuleInit {
     console.log(`Finished importing all url checks to scheduler service`);
   }
 
-  static add(urlCheck: UrlCheck) {
+  static add(urlCheck: UrlCheckDocument) {
     const intervalCallBack = setInterval(async () => {
-      await SchedulerService.httpService.get(urlCheck);
+      await SchedulerService.httpService.check(urlCheck);
     }, urlCheck.interval);
     this.schedulerRegistry.addInterval(urlCheck.id.toString(), intervalCallBack);
   }
 
-  static update(urlCheck: UrlCheck) {
+  static update(urlCheck: UrlCheckDocument) {
     this.remove(urlCheck);
     this.add(urlCheck);
   }
 
-  static remove(urlCheck: UrlCheck) {
+  static remove(urlCheck: UrlCheckDocument) {
     this.schedulerRegistry.deleteInterval(urlCheck.id.toString());
   }
 }

@@ -6,5 +6,5 @@ export class NotificationMessage {
 }
 
 export interface Notification {
-  send(from: string, to: string, message: NotificationMessage, options?, args?): Promise<any>;
+  send(message: NotificationMessage, options?, args?): Promise<any>;
 }

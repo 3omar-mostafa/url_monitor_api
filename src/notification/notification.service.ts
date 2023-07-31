@@ -14,16 +14,20 @@ export class NotificationService {
     }
     const expirationTime = process.env.JWT_EXPIRATION_TIME;
 
-    await this.emailNotificationService.send('"Omar Hafez" <ohafez@bosta.com>', user.email, {
-      subject: 'Email Verification',
-      templatePath: 'email-verification.template.html',
-      templateArgs: {
-        verificationUrl: verificationUrl,
-        expirationTime: expirationTime,
-        userId: user.id,
-        firstName: user.firstName,
-        lastName: user.lastName,
+    await this.emailNotificationService.send(
+      {
+        subject: 'Email Verification',
+        templatePath: 'email-verification.template.html',
+        templateArgs: {
+          firstName: user.firstName,
+          verificationUrl: verificationUrl,
+          expirationTime: expirationTime,
+        },
       },
-    });
+      {
+        from: '"Omar Hafez" <ohafez@bosta.com>',
+        to: user.email,
+      },
+    );
   }
 }

@@ -23,15 +23,13 @@ export class EmailNotificationService implements Notification {
     });
   }
 
-  async send(from: string, to: string, message: NotificationMessage, mailOptions?: Mail.Options, args?): Promise<any> {
+  async send(message: NotificationMessage, mailOptions?: Mail.Options, args?): Promise<any> {
     let htmlMessage = message.message;
     if (message.templatePath) {
       htmlMessage = await this.renderTemplate(message.templatePath, message.templateArgs);
     }
 
     const mailMessage: Mail.Options = {
-      from: from,
-      to: to,
       subject: message.subject,
       html: htmlMessage,
       ...mailOptions,

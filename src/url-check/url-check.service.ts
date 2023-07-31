@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { UrlCheck } from '../models/UrlCheck';
+import { UrlCheck, UrlCheckDocument } from '../models/UrlCheck';
 import { Model, ObjectId } from 'mongoose';
 import { User } from '../models/User';
 
@@ -16,25 +16,25 @@ export class UrlCheckService {
     throw new NotFoundException(`Url Check '${urlCheckId}' is not found`);
   }
 
-  async findAll(userId: ObjectId): Promise<UrlCheck[] | null> {
+  async findAll(userId: ObjectId): Promise<UrlCheckDocument[] | null> {
     return this.urlCheckModel.find({ user: userId }).exec();
   }
 
-  async create(urlCheck: UrlCheck): Promise<UrlCheck | null> {
+  async create(urlCheck: UrlCheck): Promise<UrlCheckDocument | null> {
     return this.urlCheckModel.create(urlCheck);
   }
 
-  async update(user: User, urlCheck: UrlCheck): Promise<UrlCheck | null> {
+  async update(user: User, urlCheck: UrlCheck): Promise<UrlCheckDocument | null> {
     const urlCheckId = urlCheck.id;
     urlCheck._id = urlCheckId;
     urlCheck.user = user;
 
-    urlCheck = await this.urlCheckModel.findByIdAndUpdate(urlCheckId, urlCheck, { new: true });
-    if (!urlCheck) {
+    const updatedUrlCheck = await this.urlCheckModel.findByIdAndUpdate(urlCheckId, urlCheck, { new: true });
+    if (!updatedUrlCheck) {
       throw new NotFoundException(`UrlCheck '${urlCheckId}' is not found`);
     }
 
-    return urlCheck;
+    return updatedUrlCheck;
   }
 
   async delete(userId: ObjectId, urlCheckId: ObjectId): Promise<any> {

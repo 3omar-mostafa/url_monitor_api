@@ -4,6 +4,7 @@ import { JwtService } from '../jwt/jwt.service';
 import * as bcrypt from 'bcrypt';
 import { User } from 'src/models/User';
 import { NotificationService } from '../notification/notification.service';
+import { CreateUserDto } from '../models/dto/user/createUserDto';
 
 @Injectable()
 export class AuthService {
@@ -13,14 +14,12 @@ export class AuthService {
     private notificationService: NotificationService,
   ) {}
 
-  async signup(user: User) {
+  async signup(user: CreateUserDto) {
     const existingUser = await this.usersService.findOne(user.email);
     if (existingUser) {
       throw new BadRequestException(`User '${user.email}' already exists`);
     }
-
-    const saltRounds = 10;
-    const hashedPassword = await bcrypt.hash(user.password, saltRounds);
+    const hashedPassword = await AuthService.hashPassword(user.password);
 
     let newUser = new User(user.firstName, user.lastName, user.email, hashedPassword);
     newUser = await this.usersService.create(newUser);
@@ -28,6 +27,11 @@ export class AuthService {
     this.notificationService.sendEmailVerification(newUser, this.generateVerificationUrl(newUser));
 
     return newUser;
+  }
+
+  private static async hashPassword(password: string): Promise<string> {
+    const saltRounds = 10;
+    return bcrypt.hash(password, saltRounds);
   }
 
   async logIn(email: string, password: string) {

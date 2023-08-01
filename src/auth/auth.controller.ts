@@ -1,18 +1,22 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, UseInterceptors } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { User } from '../models/User';
+import { CreateUserDto } from '../models/dto/user/createUserDto';
+import { LoginUserDto } from '../models/dto/user/LoginUserDto';
+import { ReturnUserDto } from '../models/dto/user/returnUserDto';
+import { UserResponseInterceptor } from '../interceptors/user-response.interceptor';
 
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Post('login')
-  login(@Body() user: User) {
+  login(@Body() user: LoginUserDto) {
     return this.authService.logIn(user.email, user.password);
   }
 
   @Post('signup')
-  signup(@Body() user: User) {
+  @UseInterceptors(UserResponseInterceptor)
+  signup(@Body() user: CreateUserDto): Promise<ReturnUserDto> {
     return this.authService.signup(user);
   }
 

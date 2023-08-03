@@ -3,10 +3,12 @@ import { AuthService } from './auth.service';
 import { CreateUserDto } from '../models/dto/user/createUserDto';
 import { LoginUserDto } from '../models/dto/user/LoginUserDto';
 import { ReturnUserDto } from '../models/dto/user/returnUserDto';
-import { UserResponseInterceptor } from '../interceptors/user-response.interceptor';
+import { ResponseTransformInterceptor } from '../interceptors/response-transform-interceptor.service';
 
 @Controller('auth')
 export class AuthController {
+  private static responseTransformInterceptor = new ResponseTransformInterceptor(ReturnUserDto);
+
   constructor(private authService: AuthService) {}
 
   @Post('login')
@@ -15,7 +17,7 @@ export class AuthController {
   }
 
   @Post('signup')
-  @UseInterceptors(UserResponseInterceptor)
+  @UseInterceptors(AuthController.responseTransformInterceptor)
   signup(@Body() user: CreateUserDto): Promise<ReturnUserDto> {
     return this.authService.signup(user);
   }

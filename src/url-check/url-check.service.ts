@@ -5,12 +5,14 @@ import { Model, ObjectId } from 'mongoose';
 import { User } from '../models/User';
 import { JwtService } from '../jwt/jwt.service';
 import { Models } from '../models/constants';
+import { CreateUrlCheckDto } from '../models/dto/url_check/createUrlCheckDto';
+import { UpdateUrlCheckDto } from '../models/dto/url_check/updateUrlCheckDto';
 
 @Injectable()
 export class UrlCheckService {
   constructor(private jwtService: JwtService, @InjectModel(Models.URL_CHECK) private urlCheckModel: Model<UrlCheck>) {}
 
-  async findOne(userId: ObjectId, urlCheckId: ObjectId): Promise<UrlCheck | null> {
+  async findOne(userId: ObjectId | string, urlCheckId: ObjectId | string): Promise<UrlCheckDocument | null> {
     const urlCheck = await this.urlCheckModel.findById(urlCheckId).exec();
     if (urlCheck && urlCheck.user._id == userId) {
       return urlCheck;
@@ -22,16 +24,24 @@ export class UrlCheckService {
     return this.urlCheckModel.find({ user: userId }).exec();
   }
 
-  async create(urlCheck: UrlCheck): Promise<UrlCheckDocument | null> {
-    return this.urlCheckModel.create(urlCheck);
+  async create(userId: ObjectId | string, urlCheck: CreateUrlCheckDto): Promise<UrlCheckDocument | null> {
+    return this.urlCheckModel.create({ ...urlCheck, user: userId });
   }
 
-  async update(user: User, urlCheck: UrlCheck): Promise<UrlCheckDocument | null> {
-    const urlCheckId = urlCheck.id;
-    urlCheck._id = urlCheckId;
-    urlCheck.user = user;
+  async update(
+    userId: ObjectId | string,
+    urlCheckId: ObjectId | string,
+    urlCheck: UpdateUrlCheckDto,
+  ): Promise<UrlCheckDocument | null> {
+    const updatedUrlCheck = await this.urlCheckModel.findOneAndUpdate(
+      {
+        _id: urlCheckId,
+        user: userId,
+      },
+      urlCheck,
+      { new: true },
+    );
 
-    const updatedUrlCheck = await this.urlCheckModel.findByIdAndUpdate(urlCheckId, urlCheck, { new: true });
     if (!updatedUrlCheck) {
       throw new NotFoundException(`UrlCheck '${urlCheckId}' is not found`);
     }

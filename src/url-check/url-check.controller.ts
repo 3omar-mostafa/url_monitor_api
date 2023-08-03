@@ -10,30 +10,37 @@ import {
   Put,
   Query,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { UrlCheckService } from './url-check.service';
-import { UrlCheck } from 'src/models/UrlCheck';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { GetCurrentUser } from '../auth/get-user.decorator';
 import { User } from '../models/User';
 import { ObjectId } from 'mongoose';
 import { ParseObjectIdPipe } from '../pipes/parse-object-id.pipe';
+import { CreateUrlCheckDto } from '../models/dto/url_check/createUrlCheckDto';
+import { UpdateUrlCheckDto } from '../models/dto/url_check/updateUrlCheckDto';
+import { ReturnUrlCheckDto } from '../models/dto/url_check/returnUrlCheckDto';
+import { ResponseTransformInterceptor } from '../interceptors/response-transform-interceptor.service';
 
 @Controller('url-check')
 export class UrlCheckController {
+  private static responseTransformInterceptor = new ResponseTransformInterceptor(ReturnUrlCheckDto);
+
   constructor(private readonly urlCheckService: UrlCheckService) {}
 
   @Post()
   @UseGuards(JwtAuthGuard)
+  @UseInterceptors(UrlCheckController.responseTransformInterceptor)
   @HttpCode(HttpStatus.CREATED)
-  async create(@GetCurrentUser() user: User, @Body() urlCheck: UrlCheck): Promise<UrlCheck> {
-    urlCheck.user = user;
-    return this.urlCheckService.create(urlCheck);
+  async create(@GetCurrentUser() user: User, @Body() urlCheck: CreateUrlCheckDto): Promise<ReturnUrlCheckDto> {
+    return this.urlCheckService.create(user.id, urlCheck);
   }
 
   @Get()
   @UseGuards(JwtAuthGuard)
-  async findAll(@GetCurrentUser() user: User): Promise<UrlCheck[]> {
+  @UseInterceptors(UrlCheckController.responseTransformInterceptor)
+  async findAll(@GetCurrentUser() user: User): Promise<ReturnUrlCheckDto[]> {
     return this.urlCheckService.findAll(user.id);
   }
 
@@ -44,36 +51,42 @@ export class UrlCheckController {
 
   @Get(':urlCheckId')
   @UseGuards(JwtAuthGuard)
+  @UseInterceptors(UrlCheckController.responseTransformInterceptor)
   async findOne(
     @GetCurrentUser() user: User,
     @Param('urlCheckId', ParseObjectIdPipe) urlCheckId: ObjectId,
-  ): Promise<UrlCheck> {
+  ): Promise<ReturnUrlCheckDto> {
     return this.urlCheckService.findOne(user.id, urlCheckId);
   }
 
   @Put(':urlCheckId')
   @UseGuards(JwtAuthGuard)
+  @UseInterceptors(UrlCheckController.responseTransformInterceptor)
   async update(
     @GetCurrentUser() user: User,
     @Param('urlCheckId', ParseObjectIdPipe) urlCheckId: ObjectId,
-    @Body() urlCheck: UrlCheck,
-  ): Promise<UrlCheck> {
-    urlCheck.id = urlCheckId;
-    return this.urlCheckService.update(user, urlCheck);
+    @Body() urlCheck: UpdateUrlCheckDto,
+  ): Promise<ReturnUrlCheckDto> {
+    return this.urlCheckService.update(user.id, urlCheckId, urlCheck);
   }
 
   @Delete(':urlCheckId')
   @UseGuards(JwtAuthGuard)
-  async delete(
-    @GetCurrentUser() user: User,
-    @Param('urlCheckId', ParseObjectIdPipe) urlCheckId: ObjectId,
-  ): Promise<any> {
-    return this.urlCheckService.delete(user.id, urlCheckId);
+  async delete(@GetCurrentUser() user: User, @Param('urlCheckId', ParseObjectIdPipe) urlCheckId: ObjectId) {
+    await this.urlCheckService.delete(user.id, urlCheckId);
+    return {
+      status: 'success',
+      message: 'Url check was deleted successfully',
+    };
   }
 
   @Delete()
   @UseGuards(JwtAuthGuard)
-  async deleteAll(@GetCurrentUser() user: User): Promise<any> {
-    return this.urlCheckService.deleteAll(user.id);
+  async deleteAll(@GetCurrentUser() user: User) {
+    await this.urlCheckService.deleteAll(user.id);
+    return {
+      status: 'success',
+      message: `All your url checks were deleted successfully`,
+    };
   }
 }

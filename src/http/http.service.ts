@@ -6,13 +6,12 @@ import { NotificationService } from '../notification/notification.service';
 import { UrlCheck, UrlCheckDocument } from '../models/UrlCheck';
 import { Report } from '../models/Report';
 import * as https from 'https';
+import { TimeUtils } from '../utils/time.utils';
 
 @Injectable()
 export class HttpService {
   private readonly httpsAgentIgnoringSSLErrors: https.Agent;
   private readonly httpsAgent: https.Agent;
-
-  private static MILLISECONDS_PER_SECOND = 1000;
 
   constructor(private http: Http, private notificationService: NotificationService) {
     this.http.axiosRef.interceptors.request.use((config) => {
@@ -36,7 +35,7 @@ export class HttpService {
       },
     );
 
-    this.http.axiosRef.defaults.timeout = 5 * HttpService.MILLISECONDS_PER_SECOND;
+    this.http.axiosRef.defaults.timeout = TimeUtils.s_to_ms(5);
 
     this.httpsAgentIgnoringSSLErrors = new https.Agent({
       rejectUnauthorized: false,
@@ -47,7 +46,7 @@ export class HttpService {
 
   private calculateDuration(response: AxiosResponse) {
     const timeInMilliseconds = new Date().getTime() - response.config.headers['start-time'];
-    return timeInMilliseconds / HttpService.MILLISECONDS_PER_SECOND;
+    return TimeUtils.ms_to_s(timeInMilliseconds);
   }
 
   async check(urlCheck: UrlCheckDocument) {
@@ -86,7 +85,7 @@ export class HttpService {
   private async sendRequest(url: URL, urlCheck: UrlCheck) {
     let response: AxiosResponse;
     let isUp = true;
-    let responseTime = urlCheck.timeout * HttpService.MILLISECONDS_PER_SECOND;
+    let responseTime = urlCheck.timeout;
 
     try {
       const options = this.getHttpOptions(urlCheck);
@@ -105,7 +104,7 @@ export class HttpService {
 
   private getHttpOptions(urlCheck: UrlCheck): AxiosRequestConfig {
     return {
-      timeout: urlCheck.timeout * 1000,
+      timeout: TimeUtils.s_to_ms(urlCheck.timeout),
       headers: urlCheck.httpHeaders,
       auth: urlCheck.authentication,
       httpsAgent: urlCheck.ignoreSSL ? this.httpsAgentIgnoringSSLErrors : this.httpsAgent,

@@ -22,6 +22,7 @@ import { HttpStatus } from '@nestjs/common';
 import { Transform, Type } from 'class-transformer';
 import { Report, ReportSchema } from './Report';
 import { Models } from './constants';
+import { TimeUtils } from '../utils/time.utils';
 
 export type UrlCheckDocument = HydratedDocument<UrlCheck>;
 
@@ -93,7 +94,7 @@ export class UrlCheck {
   @IsOptional()
   timeout?: number;
 
-  @Prop({ default: 10 * 60, min: 5 })
+  @Prop({ default: TimeUtils.m_to_s(10), min: 5 })
   @IsInt()
   @Min(5)
   @IsOptional()

@@ -5,6 +5,7 @@ import { UrlCheck, UrlCheckDocument } from '../models/UrlCheck';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Models } from '../models/constants';
+import { TimeUtils } from '../utils/time.utils';
 
 @Injectable()
 export class SchedulerService implements OnModuleInit {
@@ -45,7 +46,7 @@ export class SchedulerService implements OnModuleInit {
     // setInterval will call the callback after the interval has passed, not immediately, so we call it immediately once
     callback();
 
-    const intervalCallBack = setInterval(callback, urlCheck.interval);
+    const intervalCallBack = setInterval(callback, TimeUtils.s_to_ms(urlCheck.interval));
     this.schedulerRegistry.addInterval(intervalID, intervalCallBack);
   }
 

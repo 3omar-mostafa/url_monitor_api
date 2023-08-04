@@ -57,27 +57,31 @@ export class HttpService {
       isUp = statusCode === urlCheck.assert.statusCode;
     }
 
-    if (isUp !== urlCheck.isUp) {
+    urlCheck.consecutiveFailedRequestsCount = isUp ? 0 : urlCheck.consecutiveFailedRequestsCount + 1;
+
+    if (
+      (isUp === true && urlCheck.isUp === false) ||
+      (isUp === false && urlCheck.consecutiveFailedRequestsCount >= urlCheck.threshold)
+    ) {
       urlCheck.isUp = isUp;
+      urlCheck.consecutiveFailedRequestsCount = 0;
       this.notificationService.sendAllNotifications(urlCheck, url.toString()).catch();
     }
 
-    const report = urlCheck.report || new Report();
+    urlCheck.report = urlCheck.report || new Report();
+
+    urlCheck.report.history.push({ timestamp: new Date(), statusCode: statusCode, responseTime: responseTime });
 
     if (isUp) {
-      report.status = 'up';
-      report.uptime += urlCheck.interval;
-      report.availableRequestsCount++;
+      urlCheck.report.status = 'up';
+      urlCheck.report.uptime += urlCheck.interval;
+      urlCheck.report.availableRequestsCount++;
     } else {
-      report.status = 'down';
-      report.downtime += urlCheck.interval;
-      report.unavailableRequestsCount++;
+      urlCheck.report.status = 'down';
+      urlCheck.report.downtime += urlCheck.interval;
+      urlCheck.report.unavailableRequestsCount++;
     }
-    report.totalResponseTime += responseTime;
-
-    report.history.push({ timestamp: new Date(), statusCode: statusCode, responseTime: responseTime });
-
-    urlCheck.report = report;
+    urlCheck.report.totalResponseTime += responseTime;
 
     urlCheck.save().catch();
   }

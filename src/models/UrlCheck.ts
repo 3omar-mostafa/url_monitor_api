@@ -191,6 +191,15 @@ export class UrlCheck {
   isUp: boolean;
 
   /**
+   * The number of consecutive failed requests, used to check for failure threshold.
+   * Notifications will be sent every time the url is down for consecutive 'threshold' times.
+   *
+   * It resets to 0 every time the url is up again, or when notifications are sent.
+   */
+  @Prop({ default: 0 })
+  consecutiveFailedRequestsCount: number;
+
+  /**
    * List of tags to group checks together and search by tag name
    */
   @Prop()

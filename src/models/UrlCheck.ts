@@ -202,7 +202,7 @@ export class UrlCheck {
   /**
    * List of tags to group checks together and search by tag name
    */
-  @Prop()
+  @Prop({ index: true })
   @IsOptional()
   @IsArray()
   tags?: string[];

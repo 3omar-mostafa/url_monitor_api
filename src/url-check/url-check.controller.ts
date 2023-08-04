@@ -14,7 +14,7 @@ import {
 } from '@nestjs/common';
 import { UrlCheckService } from './url-check.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { GetCurrentUser } from '../auth/get-user.decorator';
+import { GetCurrentUser } from '../decorators/get-user.decorator';
 import { User } from '../models/User';
 import { ObjectId } from 'mongoose';
 import { ParseObjectIdPipe } from '../pipes/parse-object-id.pipe';
@@ -23,6 +23,8 @@ import { UpdateUrlCheckDto } from '../models/dto/url_check/updateUrlCheckDto';
 import { ReturnUrlCheckDto } from '../models/dto/url_check/returnUrlCheckDto';
 import { ResponseTransformInterceptor } from '../interceptors/response-transform-interceptor.service';
 import { ReturnReportDto } from '../models/dto/report/returnReportDto';
+import { QueryRequired } from '../decorators/query-required.decorator';
+import { ReturnMultiReportsDto } from '../models/dto/report/returnMultiReportsDto';
 
 @Controller('url-check')
 export class UrlCheckController {
@@ -48,6 +50,16 @@ export class UrlCheckController {
   @Get('unsubscribe')
   async unsubscribe(@Query('token') token: string) {
     return this.urlCheckService.unsubscribe(token);
+  }
+
+  @Get('reports')
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(new ResponseTransformInterceptor(ReturnMultiReportsDto))
+  async getReportsByTag(
+    @GetCurrentUser() user: User,
+    @QueryRequired('tag') tag: string,
+  ): Promise<ReturnMultiReportsDto[]> {
+    return this.urlCheckService.findReportsByTag(user.id, tag);
   }
 
   @Get(':urlCheckId')

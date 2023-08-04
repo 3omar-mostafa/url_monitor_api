@@ -41,9 +41,10 @@ export class ReturnUrlCheckDto {
   httpHeaders?: object;
 
   @Expose()
-  ignoreSSL: boolean;
+  ignoreSSL?: boolean;
 
-  @Expose() isUp: boolean;
+  @Expose()
+  isUp: boolean;
 
   @Expose()
   tags?: string[];

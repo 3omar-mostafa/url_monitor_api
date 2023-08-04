@@ -23,7 +23,6 @@ import { UpdateUrlCheckDto } from '../models/dto/url_check/updateUrlCheckDto';
 import { ReturnUrlCheckDto } from '../models/dto/url_check/returnUrlCheckDto';
 import { ResponseTransformInterceptor } from '../interceptors/response-transform-interceptor.service';
 import { ReturnReportDto } from '../models/dto/report/returnReportDto';
-import { Report } from '../models/Report';
 
 @Controller('url-check')
 export class UrlCheckController {
@@ -67,7 +66,7 @@ export class UrlCheckController {
   async findReport(
     @GetCurrentUser() user: User,
     @Param('urlCheckId', ParseObjectIdPipe) urlCheckId: ObjectId,
-  ): Promise<Report> {
+  ): Promise<ReturnReportDto> {
     const urlCheck = await this.urlCheckService.findOne(user.id, urlCheckId);
     return urlCheck.report;
   }

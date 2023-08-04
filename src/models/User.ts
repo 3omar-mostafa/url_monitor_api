@@ -2,6 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument, ObjectId } from 'mongoose';
 import { Allow, IsEmail, isEmail, IsMongoId, IsNotEmpty, isNotEmpty, MinLength } from 'class-validator';
 import { UrlCheck } from './UrlCheck';
+import { Models } from './constants';
 
 export type UserDocument = HydratedDocument<User>;
 
@@ -33,7 +34,7 @@ export class User {
   @Prop({ default: false })
   isVerified: boolean;
 
-  @Prop({ type: [mongoose.Schema.Types.ObjectId], ref: 'UrlCheck' })
+  @Prop({ type: [mongoose.Schema.Types.ObjectId], ref: Models.URL_CHECK })
   urlChecks: UrlCheck[];
 
   constructor(firstName: string, lastName: string, email: string, password: string) {

@@ -20,6 +20,8 @@ import {
 } from 'class-validator';
 import { HttpStatus } from '@nestjs/common';
 import { Transform, Type } from 'class-transformer';
+import { Report, ReportSchema } from './Report';
+import { Models } from './constants';
 
 export type UrlCheckDocument = HydratedDocument<UrlCheck>;
 
@@ -91,7 +93,7 @@ export class UrlCheck {
   @IsOptional()
   timeout?: number;
 
-  @Prop({ default: 10 * 60, min: 1 })
+  @Prop({ default: 10 * 60, min: 5 })
   @IsInt()
   @Min(5)
   @IsOptional()
@@ -134,8 +136,11 @@ export class UrlCheck {
   @IsArray()
   tags?: string[];
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: Models.USER })
   user: User;
+
+  @Prop({ type: ReportSchema, _id: false })
+  report: Report;
 }
 
 const UrlCheckSchema = SchemaFactory.createForClass(UrlCheck);

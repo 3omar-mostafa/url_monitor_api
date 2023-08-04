@@ -22,6 +22,8 @@ import { CreateUrlCheckDto } from '../models/dto/url_check/createUrlCheckDto';
 import { UpdateUrlCheckDto } from '../models/dto/url_check/updateUrlCheckDto';
 import { ReturnUrlCheckDto } from '../models/dto/url_check/returnUrlCheckDto';
 import { ResponseTransformInterceptor } from '../interceptors/response-transform-interceptor.service';
+import { ReturnReportDto } from '../models/dto/report/returnReportDto';
+import { Report } from '../models/Report';
 
 @Controller('url-check')
 export class UrlCheckController {
@@ -57,6 +59,17 @@ export class UrlCheckController {
     @Param('urlCheckId', ParseObjectIdPipe) urlCheckId: ObjectId,
   ): Promise<ReturnUrlCheckDto> {
     return this.urlCheckService.findOne(user.id, urlCheckId);
+  }
+
+  @Get(':urlCheckId/report')
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(new ResponseTransformInterceptor(ReturnReportDto))
+  async findReport(
+    @GetCurrentUser() user: User,
+    @Param('urlCheckId', ParseObjectIdPipe) urlCheckId: ObjectId,
+  ): Promise<Report> {
+    const urlCheck = await this.urlCheckService.findOne(user.id, urlCheckId);
+    return urlCheck.report;
   }
 
   @Put(':urlCheckId')

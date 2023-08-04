@@ -2,26 +2,34 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { InjectModel } from '@nestjs/mongoose';
 import { UrlCheck, UrlCheckDocument } from '../models/UrlCheck';
 import { Model, ObjectId } from 'mongoose';
-import { User } from '../models/User';
 import { JwtService } from '../jwt/jwt.service';
 import { Models } from '../models/constants';
 import { CreateUrlCheckDto } from '../models/dto/url_check/createUrlCheckDto';
 import { UpdateUrlCheckDto } from '../models/dto/url_check/updateUrlCheckDto';
+import { Report } from '../models/Report';
 
 @Injectable()
 export class UrlCheckService {
   constructor(private jwtService: JwtService, @InjectModel(Models.URL_CHECK) private urlCheckModel: Model<UrlCheck>) {}
 
   async findOne(userId: ObjectId | string, urlCheckId: ObjectId | string): Promise<UrlCheckDocument | null> {
-    const urlCheck = await this.urlCheckModel.findById(urlCheckId).exec();
+    const urlCheck = await this.urlCheckModel.findById(urlCheckId).select('-report').exec();
     if (urlCheck && urlCheck.user._id == userId) {
       return urlCheck;
     }
     throw new NotFoundException(`Url Check '${urlCheckId}' is not found`);
   }
 
+  async findReport(userId: ObjectId | string, urlCheckId: ObjectId | string): Promise<Report | null> {
+    const urlCheck = await this.urlCheckModel.findById(urlCheckId).select(['report', 'user']).exec();
+    if (urlCheck && urlCheck.user._id == userId) {
+      return urlCheck.report;
+    }
+    throw new NotFoundException(`Url Check Report '${urlCheckId}' is not found`);
+  }
+
   async findAll(userId: ObjectId): Promise<UrlCheckDocument[] | null> {
-    return this.urlCheckModel.find({ user: userId }).exec();
+    return this.urlCheckModel.find({ user: userId }).select('-report').exec();
   }
 
   async create(userId: ObjectId | string, urlCheck: CreateUrlCheckDto): Promise<UrlCheckDocument | null> {
@@ -50,7 +58,7 @@ export class UrlCheckService {
   }
 
   async delete(userId: ObjectId | string, urlCheckId: ObjectId | string): Promise<any> {
-    const urlCheck = await this.urlCheckModel.findById(urlCheckId).exec();
+    const urlCheck = await this.urlCheckModel.findById(urlCheckId).select('user').exec();
     if (urlCheck && urlCheck.user._id == userId) {
       return urlCheck.deleteOne();
     }

@@ -67,8 +67,7 @@ export class UrlCheckController {
     @GetCurrentUser() user: User,
     @Param('urlCheckId', ParseObjectIdPipe) urlCheckId: ObjectId,
   ): Promise<ReturnReportDto> {
-    const urlCheck = await this.urlCheckService.findOne(user.id, urlCheckId);
-    return urlCheck.report;
+    return this.urlCheckService.findReport(user.id, urlCheckId);
   }
 
   @Put(':urlCheckId')

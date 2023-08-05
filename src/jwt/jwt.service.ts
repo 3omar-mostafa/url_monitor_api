@@ -23,6 +23,14 @@ export class JwtService {
       return null;
     }
   }
+  decode(token: string, options?: JwtVerifyOptions): any {
+    try {
+      return this.jwtService.decode(token, options);
+    } catch (err) {
+      console.log('JWT decode Error: ' + err.message);
+      return null;
+    }
+  }
 
   async signAsync(payload: string, options?: Omit<JwtSignOptions, keyof jwt.SignOptions>): Promise<string> {
     return this.jwtService.signAsync(payload, options);

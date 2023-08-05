@@ -16,9 +16,6 @@ export class ResponseTransformInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, handler: CallHandler): Observable<any> {
     return handler.handle().pipe(
       map((data: any) => {
-        if (typeof data?.toJSON === 'function') {
-          data = data.toJSON();
-        }
         return plainToInstance(this.Model, data, this.options);
       }),
     );

@@ -31,11 +31,11 @@ jobs:
       run: npm ci
 
     - name: Build
-      run: npm build
+      run: npm run build
       
     - name: Run Unit Tests
-      run: npm test
+      run: npm run test
 
     - name: Run End to End Tests
-      run: npm test:e2e
+      run: npm run test:e2e
 

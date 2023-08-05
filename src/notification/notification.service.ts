@@ -38,7 +38,7 @@ export class NotificationService {
           to: user.email,
         },
       )
-      .catch();
+      .catch(() => {});
   }
 
   async sendEmailNotification(url: string, urlCheck: UrlCheckDocument) {
@@ -66,7 +66,7 @@ export class NotificationService {
           to: user.email,
         },
       )
-      .catch();
+      .catch(() => {});
   }
 
   async sendWebhookNotification(url: string, urlCheck: UrlCheckDocument) {
@@ -86,13 +86,13 @@ export class NotificationService {
           status: status,
         },
       )
-      .catch();
+      .catch(() => {});
   }
 
   async sendAllNotifications(urlCheck: UrlCheckDocument, url: string) {
     if (urlCheck.webhook) {
-      this.sendWebhookNotification(url, urlCheck).catch();
+      this.sendWebhookNotification(url, urlCheck).catch(() => {});
     }
-    this.sendEmailNotification(url, urlCheck).catch();
+    this.sendEmailNotification(url, urlCheck).catch(() => {});
   }
 }

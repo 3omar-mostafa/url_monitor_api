@@ -65,7 +65,7 @@ export class HttpService {
     ) {
       urlCheck.isUp = isUp;
       urlCheck.consecutiveFailedRequestsCount = 0;
-      this.notificationService.sendAllNotifications(urlCheck, url.toString()).catch();
+      this.notificationService.sendAllNotifications(urlCheck, url.toString()).catch(() => {});
     }
 
     urlCheck.report = urlCheck.report || new Report();
@@ -83,7 +83,7 @@ export class HttpService {
     }
     urlCheck.report.totalResponseTime += responseTime;
 
-    urlCheck.save().catch();
+    urlCheck.save().catch(() => {});
   }
 
   private async sendRequest(url: URL, urlCheck: UrlCheck) {

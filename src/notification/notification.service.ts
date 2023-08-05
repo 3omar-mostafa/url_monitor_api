@@ -22,21 +22,23 @@ export class NotificationService {
     }
     const expirationTime = process.env.JWT_EXPIRATION_TIME;
 
-    this.emailNotificationService.send(
-      {
-        subject: 'Email Verification',
-        templatePath: 'email-verification.template.html',
-        templateArgs: {
-          firstName: user.firstName,
-          verificationUrl: verificationUrl,
-          expirationTime: expirationTime,
+    this.emailNotificationService
+      .send(
+        {
+          subject: 'Email Verification',
+          templatePath: 'email-verification.template.html',
+          templateArgs: {
+            firstName: user.firstName,
+            verificationUrl: verificationUrl,
+            expirationTime: expirationTime,
+          },
         },
-      },
-      {
-        from: 'noreply@monitoring.com',
-        to: user.email,
-      },
-    );
+        {
+          from: 'noreply@monitoring.com',
+          to: user.email,
+        },
+      )
+      .catch();
   }
 
   async sendEmailNotification(url: string, urlCheck: UrlCheckDocument) {
@@ -48,45 +50,49 @@ export class NotificationService {
     const status = urlCheck.isUp ? 'up' : 'down';
 
     const unsubscribeLink = await this.urlCheckService.generateUrlCheckUnsubscribeUrl(user._id, urlCheck.id);
-    this.emailNotificationService.send(
-      {
-        subject: '[Website Monitor] Status changed',
-        templatePath: `website-status-${status}.template.html`,
-        templateArgs: {
-          firstName: user.firstName,
-          url: url,
-          unsubscribeLink: unsubscribeLink,
+    this.emailNotificationService
+      .send(
+        {
+          subject: '[Website Monitor] Status changed',
+          templatePath: `website-status-${status}.template.html`,
+          templateArgs: {
+            firstName: user.firstName,
+            url: url,
+            unsubscribeLink: unsubscribeLink,
+          },
         },
-      },
-      {
-        from: '"Url Monitor" <notifications@monitoring.com>',
-        to: user.email,
-      },
-    );
+        {
+          from: '"Url Monitor" <notifications@monitoring.com>',
+          to: user.email,
+        },
+      )
+      .catch();
   }
 
   async sendWebhookNotification(url: string, urlCheck: UrlCheckDocument) {
     const status = urlCheck.isUp ? 'up' : 'down';
 
-    this.webhookNotificationService.send(
-      {
-        subject: '[Website Monitor] Status changed',
-        message: `The url you are monitoring (${url}) is now ${status}`,
-      },
-      {
-        webhookUrl: urlCheck.webhook,
-      },
-      {
-        url: url,
-        status: status,
-      },
-    );
+    this.webhookNotificationService
+      .send(
+        {
+          subject: '[Website Monitor] Status changed',
+          message: `The url you are monitoring (${url}) is now ${status}`,
+        },
+        {
+          webhookUrl: urlCheck.webhook,
+        },
+        {
+          url: url,
+          status: status,
+        },
+      )
+      .catch();
   }
 
   async sendAllNotifications(urlCheck: UrlCheckDocument, url: string) {
     if (urlCheck.webhook) {
-      this.sendWebhookNotification(url, urlCheck);
+      this.sendWebhookNotification(url, urlCheck).catch();
     }
-    this.sendEmailNotification(url, urlCheck);
+    this.sendEmailNotification(url, urlCheck).catch();
   }
 }

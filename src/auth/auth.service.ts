@@ -2,7 +2,7 @@ import { BadRequestException, Injectable, NotFoundException, UnauthorizedExcepti
 import { UsersService } from '../users/users.service';
 import { JwtService } from '../jwt/jwt.service';
 import * as bcrypt from 'bcrypt';
-import { User } from 'src/models/User';
+import { User } from '../models/User';
 import { NotificationService } from '../notification/notification.service';
 import { CreateUserDto } from '../models/dto/user/createUserDto';
 
@@ -24,7 +24,7 @@ export class AuthService {
     let newUser = new User(user.firstName, user.lastName, user.email, hashedPassword);
     newUser = await this.usersService.create(newUser);
 
-    this.notificationService.sendEmailVerification(newUser, this.generateVerificationUrl(newUser));
+    this.notificationService.sendEmailVerification(newUser, this.generateVerificationUrl(newUser)).catch();
 
     return newUser;
   }

@@ -1,73 +1,109 @@
+# URL Monitoring API
+
+## A Simple REST API to monitor websites, and send notifications to users when website availability changes
+
 <p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
+    <a href="https://github.com/3omar-mostafa/url_monitor_api/actions/workflows/ci.yml" alt="CI Pipeline">
+        <img src="https://github.com/3omar-mostafa/url_monitor_api/actions/workflows/ci.yml/badge.svg" />
+    </a>
+    <a href="https://documenter.getpostman.com/view/28971351/2s9XxyRtDs" alt="Postman docs">
+        <img src="https://img.shields.io/badge/Postman-docs-orange?style=flat&logo=postman&logoColor=white&labelColor=orange" />
+    </a>
 </p>
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+---
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
+<p align="center">
+<strong>Used Tools & Technologies<strong/><br/><br/>
+<img src="https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white" />
+<img src="https://img.shields.io/badge/nestjs-%23E0234E.svg?style=for-the-badge&logo=nestjs&logoColor=white" />
+<img src="https://img.shields.io/badge/MongoDB-%234ea94b.svg?style=for-the-badge&logo=mongodb&logoColor=white" />
+<img src="https://img.shields.io/badge/-jest-%23C21325?style=for-the-badge&logo=jest&logoColor=white" />
+<img src="https://img.shields.io/badge/IntelliJ%20IDEA-000000.svg?style=for-the-badge&logo=intellij-idea&logoColor=white" />
+<img src="https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white" />
+<img src="https://img.shields.io/badge/Postman-FF6C37?style=for-the-badge&logo=postman&logoColor=white" />
 </p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
-## Description
+---
+## Docker
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+### Dependencies
+Application is dockerized, all you need is to have `docker-compose`
 
-## Installation
+### Getting Started
+1. Checkout this repository
+    ```sh
+    git clone https://github.com/3omar-mostafa/url_monitor_api.git
+    ```
+2. Create `.env` file based on `example.env` template
+  
+3. Run using docker
+    ```sh
+    cd url_monitor_api
+    docker-compose up -d
+    ```
 
-```bash
-$ npm install
-```
+    The above command assumes the environment variables are located in `.env`, to use another file you can use `ENV_FILE`
+   
+    ```sh
+    cd url_monitor_api
+    ENV_FILE=prod.env docker-compose up -d --env-file "${ENV_FILE}"
+    ```
 
-## Running the app
+---
 
-```bash
-# development
-$ npm run start
+### Dependencies
+  - node.js >= 16
+  - MongoDB
+  
+    ```sh
+    # Install npm dependencies
+    npm install
+    ```
+  
+### Getting Started
+1. Checkout this repository
+    ```sh
+    git clone https://github.com/3omar-mostafa/url_monitor_api.git
+    ```
+2. Create `.env` file based on `example.env` template
 
-# watch mode
-$ npm run start:dev
+3. Running the app
+  
+    ```sh
+    # development
+    npm run start
+    ```
+    
+    ```sh
+    # watch mode
+    npm run start:dev
+    ```
+    
+    ```sh
+    # production mode
+    npm run start:prod
+    ```
 
-# production mode
-$ npm run start:prod
-```
+4. Test (Optional)
+  
+    ```sh
+    # unit tests
+    npm run test
+    ```
+    
+    ```sh
+    # e2e tests
+    npm run test:e2e
+    ```
+    
+    ```sh
+    # test coverage
+    npm run test:cov
+    ```
 
-## Test
+---
 
-```bash
-# unit tests
-$ npm run test
+## API Documentation
 
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](LICENSE).
+[![Postman docs](https://img.shields.io/badge/Postman-Docs-orange?style=for-the-badge&logo=postman&logoColor=white&labelColor=orange)](https://documenter.getpostman.com/view/28971351/2s9XxyRtDs) 
